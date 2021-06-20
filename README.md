@@ -3,12 +3,16 @@
 Search for bit patterns in standard input.
 Probably useless.
 
+## Example
+Search for first 11 bits of `f8c` (`1111 1000 110`) in the input:
 ```
-$ # look for 1111 1000 110 in the input
 $ echo 'h>0?' | ./bitmatch f8c 11 || echo not found
 $ echo 'h<0?' | ./bitmatch f8c 11 || echo not found
 not found
 ```
+
+## Usage
+
 ```
 $ ./bitmatch
 usage: bitmatch hex_pattern prefix_length
@@ -20,7 +24,7 @@ usage: bitmatch hex_pattern prefix_length
 
 ```
 make all
-./test.sh ./build/target
+./test.sh ./build/target bitmatch
 ```
 
 ### With GCC
@@ -33,4 +37,19 @@ make CC=gcc CXX=g++ all
 
 ```
 make BUILD=release all
+```
+
+### C++ API
+
+```
+make dirs bitdump bitmatch_cpp
+./test.sh ./build/target bitmatch_cpp
+```
+
+### Shared library
+
+```
+make dirs bitdump bitmatch_dyn
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./build
+./test.sh ./build/target bitmatch_dyn
 ```
