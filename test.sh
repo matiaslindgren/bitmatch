@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-if [ $# -ne 1 ]; then
-	echo usage: ./test.sh ./build/target
+if [ $# -ne 2 ]; then
+	echo usage: ./test.sh ./build/target bitmatch
 	exit 2
 fi
 
@@ -29,18 +29,21 @@ function run_test {
 	local expected_out=$2
 	printf 'input: '
 	echo "$input" | $target_dir/bitdump
-	for target in $target_dir/bitmatch{,_cpp,_dyn}; do
-		echo "$input" | $target f8c 11
-		assert_eq $target $? $expected_out
-		out=$?
-		if [ $fail -eq 0 ]; then
-			fail=$out
-		fi
-	done
+	echo "$input" | $target_dir/$target f8c 11
+	assert_eq $target_dir/$target $? $expected_out
+	out=$?
+	if [ $fail -eq 0 ]; then
+		fail=$out
+	fi
 }
 
 
 target_dir=$1
+target=$2
+if [ ! -f $target_dir/$target ]; then
+	echo error: target $target_dir/$target does not exist
+	exit 1
+fi
 fail=0
 
 echo searching for 11 first bits of f8c

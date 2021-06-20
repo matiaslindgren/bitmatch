@@ -7,22 +7,36 @@ on:
 jobs:
   clang_test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build: [debug, release]
+        target: [bitmatch, bitmatch_cpp, bitmatch_dyn]
     steps:
     - uses: actions/checkout@v2
     - run: sudo apt install clang-10 make
-    - run: make all
-    - run: ./test.sh ./build/target
-    - run: make clean
-    - run: make BUILD=release CC=clang CXX=clang++ all
-    - run: ./test.sh ./build/target
+    - run: make dirs bitdump ${{ matrix.target }}
+      env:
+        BUILD: ${{ matrix.build }}
+        CC: clang
+        CXX: clang++
+    - run: ./test.sh ./build/target ${{ matrix.target }}
+      env:
+        LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}:./build
 
   gcc_test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build: [debug, release]
+        target: [bitmatch, bitmatch_cpp, bitmatch_dyn]
     steps:
     - uses: actions/checkout@v2
     - run: sudo apt install gcc-10 make
-    - run: make all
-    - run: ./test.sh ./build/target
-    - run: make clean
-    - run: make BUILD=release CC=gcc CXX=g++ all
-    - run: ./test.sh ./build/target
+    - run: make dirs bitdump ${{ matrix.target }}
+      env:
+        BUILD: ${{ matrix.build }}
+        CC: gcc
+        CXX: g++
+    - run: ./test.sh ./build/target ${{ matrix.target }}
+      env:
+        LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}:./build

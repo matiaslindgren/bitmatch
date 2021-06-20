@@ -1,8 +1,8 @@
-OUTDIR := ./build
-CC := clang
-CXX := clang++
-CFLAGS := -g -Wall -Wextra -Werror
-CXXFLAGS := -std=c++17
+OUTDIR ?= ./build
+CC ?= clang
+CXX ?= clang++
+CFLAGS ?= -g -Wall -Wextra -Werror
+CXXFLAGS ?= -std=c++17
 
 BUILD ?= debug
 ifeq ($(BUILD),release)
