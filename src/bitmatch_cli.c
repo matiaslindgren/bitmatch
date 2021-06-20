@@ -5,7 +5,8 @@
 
 int main(int argc, const char **argv) {
   if (argc != 3) {
-    fprintf(stderr, "usage: bitmatch pattern length\n");
+    fprintf(stderr, BITMATCH_USAGE);
+    fprintf(stderr, "\n");
     return 2;
   }
   const char *pattern = argv[1];

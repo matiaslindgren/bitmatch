@@ -6,7 +6,7 @@
 
 int main(int argc, const char **argv) {
   if (argc != 3) {
-    std::cerr << "usage: bitmatch pattern length\n";
+    std::cerr << BITMATCH_USAGE << "\n";
     return 2;
   }
   const std::string pattern{argv[1]};

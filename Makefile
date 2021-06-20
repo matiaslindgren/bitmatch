@@ -1,22 +1,26 @@
 OUTDIR := ./build
 CC := clang
-CFLAGS := -g -fsanitize=undefined -Wall -Wextra -Werror
 CXX := clang++
+CFLAGS := -g -Wall -Wextra -Werror
 CXXFLAGS := -std=c++17
 
-.PHONY: all dirs bitmatch bitdump clean
+BUILD ?= debug
+ifeq ($(BUILD),release)
+	CFLAGS := $(CFLAGS) -O3
+else
+	CFLAGS := $(CFLAGS) -fsanitize=undefined
+endif
+
+.PHONY: all dirs bitmatch bitmatch_cpp bitdump clean
 
 
-all: dirs bitmatch bitmatch_cpp bitdump
+all: dirs bitdump bitmatch bitmatch_cpp bitmatch_dyn
 
 dirs:
 	@mkdir -pv $(OUTDIR)/target
 
 clean:
 	rm -rv $(OUTDIR)
-
-test: all
-	./test.sh $(OUTDIR)/target
 
 bitdump: src/bitdump_cli.c src/bitmatch.c
 	@$(CC) $(CFLAGS) -I./include -o $(OUTDIR)/target/$@ $^
@@ -35,11 +39,21 @@ bitmatch.o: src/bitmatch.c
 	@$(CC) $(CFLAGS) -I./include -c -o $(OUTDIR)/$@ $^
 
 
-bitmatch_cpp: bitmatch_cpp_cli.o bitmatch_cpp.o bitmatch.o
+bitmatch_cpp: bitmatch_cpp_cli.o bitmatch_cpp.a
 	@$(CXX) $(CXXFLAGS) $(CFLAGS) -o $(OUTDIR)/target/$@ $(addprefix $(OUTDIR)/,$^)
 
 bitmatch_cpp_cli.o: src/bitmatch_cli.cpp
 	@$(CXX) $(CXXFLAGS) $(CFLAGS) -I./include -c -o $(OUTDIR)/$@ $^
 
-bitmatch_cpp.o: src/bitmatch.cpp bitmatch.o
-	@$(CXX) $(CXXFLAGS) $(CFLAGS) -I./include -c -o $(OUTDIR)/$@ $<
+bitmatch_cpp.a: bitmatch_cpp.o bitmatch.o
+	@ar -rcs $(OUTDIR)/$@ $(addprefix $(OUTDIR)/,$^)
+
+bitmatch_cpp.o: src/bitmatch.cpp
+	@$(CXX) $(CXXFLAGS) $(CFLAGS) -I./include -c -o $(OUTDIR)/$@ $^
+
+
+bitmatch_dyn: bitmatch.dylib
+	@$(CC) $(CFLAGS) -o $(OUTDIR)/target/$@ -I./include src/bitmatch_cli.c $(OUTDIR)/$^
+
+bitmatch.dylib: src/bitmatch.c
+	@$(CC) $(CFLAGS) -I./include -o $(OUTDIR)/$@ -dynamiclib $^

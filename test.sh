@@ -15,9 +15,9 @@ function assert_eq {
 		fi
 	else
 		if [ $3 -eq 0 ]; then
-			echo $1: fail, pattern not found but it is in the input
+			echo $1: fail, pattern not found but it was expected to be in the input
 		else
-			echo $1: fail, pattern found but it is not in the input
+			echo $1: fail, pattern found but it was not expected to be in the input
 		fi
 		return 1
 	fi
@@ -29,7 +29,7 @@ function run_test {
 	local expected_out=$2
 	printf 'input: '
 	echo "$input" | $target_dir/bitdump
-	for target in $target_dir/{bitmatch,bitmatch_cpp}; do
+	for target in $target_dir/bitmatch{,_cpp,_dyn}; do
 		echo "$input" | $target f8c 11
 		assert_eq $target $? $expected_out
 		out=$?

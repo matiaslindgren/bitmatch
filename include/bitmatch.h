@@ -8,7 +8,15 @@ extern "C" {
 // Bits in a char
 #define BITMATCH_CHAR_LEN 8
 
-// Extract each bit of 'ch' into array 'bits' such that the MSB is at index 0.
+#define BITMATCH_USAGE                                                         \
+  "usage: bitmatch hex_pattern prefix_length\n"                                \
+  "  hex_pattern: string in hexadecimal of the pattern to search for. E.g. "   \
+  "hex_pattern f8c will search for 111110001100\n"                             \
+  "  prefix_length: number of bits to use from the beginning of hex_pattern. " \
+  "E.g. prefix_length 9 would search for 111110001."
+
+// Extract each bit of 'ch' into array 'bits' such that the MSB is at index
+// 0.
 void char_to_bits(const char ch, char *bits);
 
 // Find the first non-zero bit and return its index.
