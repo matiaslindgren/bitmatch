@@ -9,28 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: install
-      run: sudo apt install clang-10 make
-    - name: build debug
-      run: make all
-    - name: test debug
-      run: ./test.sh ./build/target
-    - name: build release
-      run: make BUILD=release all
-    - name: test release
-      run: ./test.sh ./build/target
+    - run: sudo apt install clang-10 make
+    - run: make all
+    - run: ./test.sh ./build/target
+    - run: make clean
+    - run: make BUILD=release CC=clang CXX=clang++ all
+    - run: ./test.sh ./build/target
 
   gcc_test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: install
-      run: sudo apt install gcc-10 make
-    - name: build debug
-      run: make all
-    - name: test debug
-      run: ./test.sh ./build/target
-    - name: build release
-      run: make BUILD=release CC=gcc CXX=g++ all
-    - name: test release
-      run: ./test.sh ./build/target
+    - run: sudo apt install gcc-10 make
+    - run: make all
+    - run: ./test.sh ./build/target
+    - run: make clean
+    - run: make BUILD=release CC=gcc CXX=g++ all
+    - run: ./test.sh ./build/target
