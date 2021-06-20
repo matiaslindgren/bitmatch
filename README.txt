@@ -4,10 +4,10 @@ make all
 
 Testing:
 
-make all && ./test.sh ./build/target
+make all && ./test.sh ./build/target bitmatch
 
 Building with GCC:
 
 make CC=gcc CXX=g++ all
 
-Tested only on Apple M1, macOS Big Sur.
+See README.md for more information.
