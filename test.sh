@@ -1,36 +1,50 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -uo pipefail
 
 if [ $# -ne 1 ]; then
-	echo usage ./test.sh outdir
+	echo usage: ./test.sh ./build/target
 	exit 2
 fi
 
-outdir=$1
+function assert_eq {
+	if [ $2 -eq $3 ]; then
+		if [ $3 -eq 0 ]; then
+			echo $1: ok, pattern found
+		else
+			echo $1: ok, pattern not found
+		fi
+	else
+		if [ $3 -eq 0 ]; then
+			echo $1: fail, pattern not found but it is in the input
+		else
+			echo $1: fail, pattern found but it is not in the input
+		fi
+		return 1
+	fi
+	return 0
+}
+
+function run_test {
+	local input="$1"
+	local expected_out=$2
+	printf 'input: '
+	echo "$input" | $target_dir/bitdump
+	for target in $target_dir/{bitmatch,bitmatch_cpp}; do
+		echo "$input" | $target f8c 11
+		assert_eq $target $? $expected_out
+		out=$?
+		if [ $fail -eq 0 ]; then
+			fail=$out
+		fi
+	done
+}
+
+
+target_dir=$1
 fail=0
 
 echo searching for 11 first bits of f8c
-
-echo
-printf 'input: '
-echo 'h>0?' | $outdir/bitdump
-echo 'h>0?' | $outdir/bitmatch f8c 11
-if [ $? -eq 0 ]; then
-	echo ok, pattern found
-else
-	echo fail, pattern not found but it is in the input
-	fail=1
-fi
-
-echo
-printf 'input: '
-echo 'h<0?' | $outdir/bitdump
-echo 'h<0?' | $outdir/bitmatch f8c 11
-if [ $? -eq 1 ]; then
-	echo ok, pattern not found
-else
-	echo fail, pattern found but it is not in the input
-	fail=1
-fi
+run_test 'h>0?' 0
+run_test 'h<0?' 1
 
 exit $fail
